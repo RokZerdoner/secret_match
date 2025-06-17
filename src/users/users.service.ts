@@ -6,6 +6,7 @@ import {CreateUserDto} from "./dto/create-user.dto";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {AuthService} from "../auth/auth.service";
 import * as bcrypt from 'bcrypt';
+import {Role} from "../roles/role.enum";
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,7 @@ export class UsersService {
     async register(createUserDto: CreateUserDto): Promise<User> {
         let createdUser = new this.userModel(createUserDto);
         createdUser.password = await bcrypt.hash(createUserDto.password, this.saltOrRounds);
+        createdUser.role = Role.User; // If you want to make it admin, just change this to Role.admin
         return createdUser.save();
     }
 

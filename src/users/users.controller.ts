@@ -4,6 +4,9 @@ import {UsersService} from "./users.service";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {Public} from "../auth/secrets/public.secrets";
 import {AuthGuard} from "../auth/auth.guard";
+import {Roles} from "../roles/roles.decorator";
+import {Role} from "../roles/role.enum";
+import {RolesGuard} from "../roles/roles.guard";
 
 @Controller('users')
 export class UsersController {
@@ -27,5 +30,12 @@ export class UsersController {
     @Get('test')
     getTest() {
         return 'You are verified';
+    }
+
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @Get('admin_test')
+    getAdminTest(){
+        return 'You have rights for this';
     }
 }
