@@ -22,7 +22,7 @@ export class UsersController {
     @Public()
     @HttpCode(HttpStatus.OK)
     @Post('register')
-    register(@Body() createUserDto: CreateUserDto){
+    async register(@Body() createUserDto: CreateUserDto){
         return this.usersService.register(createUserDto);
     }
 
