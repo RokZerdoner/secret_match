@@ -7,11 +7,20 @@ import {Roles} from "../roles/roles.decorator";
 import {Role} from "../roles/role.enum";
 import {CreateMessageDto} from "./dto/create-message.dto";
 
+/**
+ * Controller for match api endpoint
+ */
 @Controller('match')
 export class MatchController {
     constructor(private readonly matchService: MatchService) {
     }
 
+    /**
+     * Users (and admins) can join match with valid jwt token
+     * @param user
+     * From jwt token it gets user data, which is then stored in document called match joins.
+     * All users can only join ONCE
+     */
     @UseGuards(AuthGuard)
     @Post('join')
     async join(@CurrentUserTokenDecorator() user: any) {
@@ -22,6 +31,11 @@ export class MatchController {
         return this.matchService.create(newUserJoinMatch);
     }
 
+    /**
+     * The same as join, but users can also add message within body as { 'message': 'your message'}
+     * @param user
+     * @param createMessageDto
+     */
     @UseGuards(AuthGuard)
     @Post('join_message')
     async joinMessage(@CurrentUserTokenDecorator() user: any, @Body() createMessageDto: CreateMessageDto) {
@@ -33,10 +47,14 @@ export class MatchController {
         return this.matchService.createWithMessage(newUserJoinMatch);
     }
 
+    /**
+     * Admins can now create match pairs from all users tha have joined
+     * @param user
+     */
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(Role.Admin)
     @Post('assign')
-    async assign(@CurrentUserTokenDecorator() user: any){
+    async assign(@CurrentUserTokenDecorator() user: any) {
         const createMatchModel = {
             admin: user.sub,
             pairs: [],

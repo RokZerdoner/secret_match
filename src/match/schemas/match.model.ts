@@ -1,6 +1,10 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import mongoose, {Model} from "mongoose";
 
+/**
+ * class Pair,
+ * it saves all players within that par and also other statistical info for later use
+ */
 export class Pair{
     constructor() {
         this.players = [];
@@ -17,6 +21,10 @@ export class Pair{
     whichPlayerWon: null
 }
 
+/**
+ * Match model,
+ * It has info about matches
+ */
 @Schema()
 export class MatchModel{
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true})

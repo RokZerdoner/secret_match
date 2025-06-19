@@ -4,6 +4,9 @@ import {Role} from "../../roles/role.enum";
 
 export type UserDocument = HydratedDocument<User>;
 
+/**
+ * Model of User
+ */
 @Schema()
 export class User {
     @Prop()

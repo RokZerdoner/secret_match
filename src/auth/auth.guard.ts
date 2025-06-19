@@ -5,6 +5,10 @@ import {Reflector} from "@nestjs/core";
 import {IS_PUBLIC_KEY} from "./secrets/public.secrets";
 import {JwtSecrets} from "./secrets/jwt.secrets";
 
+/**
+ * Authentication guard for jwt token checking,
+ * It checks whether users have sent their jwt token
+ */
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(private jwtService: JwtService,

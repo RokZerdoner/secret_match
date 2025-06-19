@@ -3,6 +3,9 @@ import {Reflector} from "@nestjs/core";
 import {Role} from "./role.enum";
 import {ROLES} from "./roles.decorator";
 
+/**
+ * Guard class for checking if user has valid rights to access specific method
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(private reflector: Reflector) {

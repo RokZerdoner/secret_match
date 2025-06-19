@@ -3,6 +3,10 @@ import mongoose, {HydratedDocument} from "mongoose";
 
 export type MatchJoinDocument = HydratedDocument<MatchJoin>;
 
+/**
+ * Match join model,
+ * It has info of who has joined the match
+ */
 @Schema()
 export class MatchJoin {
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true})
