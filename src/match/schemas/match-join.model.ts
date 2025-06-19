@@ -5,10 +5,13 @@ export type MatchJoinDocument = HydratedDocument<MatchJoin>;
 
 @Schema()
 export class MatchJoin {
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true})
     user: mongoose.Types.ObjectId;
 
-    @Prop({ type: Date, default: Date.now })
+    @Prop({default: ""})
+    message: string;
+
+    @Prop({type: Date, default: Date.now})
     timeJoined: Date;
 }
 

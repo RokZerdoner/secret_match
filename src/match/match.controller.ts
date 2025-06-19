@@ -1,18 +1,15 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, UseGuards} from '@nestjs/common';
 import {MatchService} from "./match.service";
 import {AuthGuard} from "../auth/auth.guard";
 import {CurrentUserTokenDecorator} from "../auth/secrets/current-user-token.decorator";
-import {InjectModel} from "@nestjs/mongoose";
-import {MatchJoin} from "./schemas/match-join.model";
-import {Model} from "mongoose";
-import {CreateJoinMatchDto} from "./dto/create-join-match.dto";
 import {RolesGuard} from "../roles/roles.guard";
 import {Roles} from "../roles/roles.decorator";
 import {Role} from "../roles/role.enum";
+import {CreateMessageDto} from "./dto/create-message.dto";
 
 @Controller('match')
 export class MatchController {
-    constructor(private readonly matchService: MatchService, @InjectModel(MatchJoin.name) private createJoinMatchDto: Model<CreateJoinMatchDto>) {
+    constructor(private readonly matchService: MatchService) {
     }
 
     @UseGuards(AuthGuard)
@@ -23,6 +20,17 @@ export class MatchController {
             timeJoined: new Date(),
         };
         return this.matchService.create(newUserJoinMatch);
+    }
+
+    @UseGuards(AuthGuard)
+    @Post('join_message')
+    async joinMessage(@CurrentUserTokenDecorator() user: any, @Body() createMessageDto: CreateMessageDto) {
+        const newUserJoinMatch = {
+            user: user.sub,
+            timeJoined: new Date(),
+            message: createMessageDto.message,
+        };
+        return this.matchService.createWithMessage(newUserJoinMatch);
     }
 
     @UseGuards(AuthGuard, RolesGuard)

@@ -12,6 +12,7 @@ import {CreateJoinMatchDto} from "./dto/create-join-match.dto";
 import {MatchModel, Pair} from "./schemas/match.model";
 import {CreateMatchDto} from "./dto/create-match.dto";
 import {UsersService} from "../users/users.service";
+import {CreateMessageJoinMatchDto} from "./dto/create-message-join-match.dto";
 
 @Injectable()
 export class MatchService {
@@ -24,6 +25,14 @@ export class MatchService {
         let checkIfAlreadyExists = await this.matchJoinModel.findOne({user: createMatchJoinDto.user}).exec()
         if (checkIfAlreadyExists !== null) throw ConflictException;
         let createdMatchJoin = new this.matchJoinModel(createMatchJoinDto);
+        createdMatchJoin.message = "";
+        return createdMatchJoin.save();
+    }
+
+    async createWithMessage(createMessageMatchJoinDto: CreateMessageJoinMatchDto) : Promise<MatchJoin>{
+        let checkIfAlreadyExists = await this.matchJoinModel.findOne({user: createMessageMatchJoinDto.user}).exec()
+        if (checkIfAlreadyExists !== null) throw ConflictException;
+        let createdMatchJoin = new this.matchJoinModel(createMessageMatchJoinDto);
         return createdMatchJoin.save();
     }
 
@@ -68,7 +77,7 @@ export class MatchService {
                 const player = pair.players[i];
 
                 if (player.toString() === userId) {
-                    pair.players.splice(i, 1); // Remove current user
+                    pair.players.splice(i, 1);
                     if (pair.players.length > 0) {
                         const otherPlayerId = pair.players[0].toString();
                         return await this.userService.getUsernameAndEmail(otherPlayerId);
