@@ -11,11 +11,13 @@ import {Model} from "mongoose";
 import {CreateJoinMatchDto} from "./dto/create-join-match.dto";
 import {MatchModel, Pair} from "./schemas/match.model";
 import {CreateMatchDto} from "./dto/create-match.dto";
+import {UsersService} from "../users/users.service";
 
 @Injectable()
 export class MatchService {
     constructor(@InjectModel(MatchJoin.name) private matchJoinModel: Model<MatchJoin>,
-                @InjectModel(MatchModel.name) private matchModel: Model<MatchModel>) {
+                @InjectModel(MatchModel.name) private matchModel: Model<MatchModel>,
+                private userService: UsersService) {
     }
 
     async create(createMatchJoinDto: CreateJoinMatchDto): Promise<MatchJoin> {
@@ -58,18 +60,24 @@ export class MatchService {
         throw new UnprocessableEntityException();
     }
 
-    async view(userId: string): Promise<string | null>{
+    async view(userId: string): Promise<object | null> {
         const latestMatch = await this.findLast();
-        if(latestMatch === null) throw new NotFoundException();
-        console.log(userId);
-        latestMatch.pairs.forEach((pair, index) =>{
-            pair.players.forEach((player, index) => {
-                if(player.toString() === userId){
-                    pair.players.slice(index,1);
-                    return pair.players[0].toString();
+        if (latestMatch === null) throw new NotFoundException();
+        for (const pair of latestMatch.pairs) {
+            for (let i = 0; i < pair.players.length; i++) {
+                const player = pair.players[i];
+
+                if (player.toString() === userId) {
+                    pair.players.splice(i, 1); // Remove current user
+                    if (pair.players.length > 0) {
+                        const otherPlayerId = pair.players[0].toString();
+                        return await this.userService.getUsernameAndEmail(otherPlayerId);
+                    } else {
+                        return null;
+                    }
                 }
-            })
-        })
+            }
+        }
         return null;
     }
 
