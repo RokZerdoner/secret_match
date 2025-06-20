@@ -13,6 +13,7 @@ import {MatchModel, Pair} from "./schemas/match.model";
 import {CreateMatchDto} from "./dto/create-match.dto";
 import {UsersService} from "../users/users.service";
 import {CreateMessageJoinMatchDto} from "./dto/create-message-join-match.dto";
+import {MailingService} from "../mailing/mailing.service";
 
 /**
  * The logic of match methods
@@ -21,7 +22,8 @@ import {CreateMessageJoinMatchDto} from "./dto/create-message-join-match.dto";
 export class MatchService {
     constructor(@InjectModel(MatchJoin.name) private matchJoinModel: Model<MatchJoin>,
                 @InjectModel(MatchModel.name) private matchModel: Model<MatchModel>,
-                private userService: UsersService) {
+                private userService: UsersService,
+                private mailingService: MailingService) {
     }
 
     /**
@@ -111,7 +113,10 @@ export class MatchService {
                     pair.players.splice(i, 1);
                     if (pair.players.length > 0) {
                         const otherPlayerId = pair.players[0].toString();
-                        return await this.userService.getUsernameAndEmail(otherPlayerId); // getting all important information form user with id
+                        let res =  await this.userService.getUsernameAndEmail(otherPlayerId); // getting all important information form user with id
+                        let res2 =  await this.userService.getUsernameAndEmail(userId); // getting all important information form user with id
+                        await this.mailingService.sendUsersTheirPair(res2, res);
+                        return res;
                     } else {
                         return {
                             message: "You are the only one in your match pair. You already won"
