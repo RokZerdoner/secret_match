@@ -80,6 +80,13 @@ export class MatchService {
                 let newPair = new Pair();
                 newPair.players.push(getAllParticipants[0].user);
                 createMatchDto.pairs.push(newPair);
+                let currentUserInfo=  await this.userService.getUsernameAndEmail(newPair.players[0].toString()); // getting all important information form user with id
+                try {
+                    await this.mailingService.sendUsersTheirPair(currentUserInfo, currentUserInfo);
+                }
+                catch (e) {
+                    console.log('Invalid email address');
+                }
                 break;
             }
             let newPair = new Pair();
@@ -89,6 +96,20 @@ export class MatchService {
                 getAllParticipants.splice(index, 1);
             }
             createMatchDto.pairs.push(newPair);
+
+            for (let i = 0; i < newPair.players.length; i++) {
+                let currentUserInfo=  await this.userService.getUsernameAndEmail(newPair.players[i].toString()); // getting all important information form user with id
+                for (let j = 0; j < NUMBER_OF_PLAYERS; j++) {
+                    if(i==j) continue;
+                    try {
+                        let otherUserInfo =  await this.userService.getUsernameAndEmail(newPair.players[j].toString()); // getting all important information form user with id
+                        await this.mailingService.sendUsersTheirPair(otherUserInfo, currentUserInfo);
+                    }
+                    catch (e) {
+                        console.log('Invalid email address');
+                    }
+                }
+            }
         }
 
         const hasDeleted = await this.deleteAll(); // calling delete all function
@@ -114,8 +135,8 @@ export class MatchService {
                     if (pair.players.length > 0) {
                         const otherPlayerId = pair.players[0].toString();
                         let res =  await this.userService.getUsernameAndEmail(otherPlayerId); // getting all important information form user with id
-                        let res2 =  await this.userService.getUsernameAndEmail(userId); // getting all important information form user with id
-                        await this.mailingService.sendUsersTheirPair(res2, res);
+                        //let res2 =  await this.userService.getUsernameAndEmail(userId); // getting all important information form user with id
+                        //await this.mailingService.sendUsersTheirPair(res2, res);
                         return res;
                     } else {
                         return {

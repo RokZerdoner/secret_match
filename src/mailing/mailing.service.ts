@@ -21,8 +21,9 @@ export class MailingService {
     }
 
     async sendUsersTheirPair(userInfo: any, opponentInfo: any) {
-        const emailBody = `Hello ${userInfo.name},\n\nYour match opponent is: ${opponentInfo.name} (${opponentInfo.email})\n\nGood luck,\nThe Secret match Team`;
-
+        let emailBody = `Hello ${userInfo.name},\n\nYour match opponent is: ${opponentInfo.name} (${opponentInfo.email})\n\nGood luck,\nThe Secret match Team`;
+        if(userInfo === opponentInfo)
+            emailBody =`Hello ${userInfo.name},\n\nYou are the only one in your pair match. That means that you already won the match.\n\nCongrats,\nThe Secret match Team`
         await this.transporter.sendMail({
             to: opponentInfo.email,
             subject: 'Notification about your match opponent',
